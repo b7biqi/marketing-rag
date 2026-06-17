@@ -19,9 +19,12 @@ from pathlib import Path
 import fitz  # PyMuPDF
 import docx
 
+from config import settings
+
 _BOLD_FLAG = 1 << 4
 _NOF_RE = re.compile(r"^\d+\s+of\s+\d+$", re.IGNORECASE)
 _BOILER_SUBSTRINGS = ("psref", "product specifications reference")
+_IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".tiff", ".tif", ".bmp", ".webp"}
 
 
 def parse_file(path: str | Path) -> list[dict]:
@@ -33,7 +36,20 @@ def parse_file(path: str | Path) -> list[dict]:
         return _parse_docx(path)
     if ext in {".txt", ".md"}:
         return _parse_text(path)
+    if ext in _IMAGE_EXTS:
+        return _parse_image(path)
     raise ValueError(f"Unsupported file type: {ext} ({path})")
+
+
+def _parse_image(path: Path) -> list[dict]:
+    """OCR an image file (screenshot, photo, scan)."""
+    if not settings.ocr_enabled:
+        print(f"  [parser] {path.name}: image file but OCR disabled — skipped")
+        return []
+    from ingestion.ocr import ocr_image_bytes
+
+    text = ocr_image_bytes(path.read_bytes())
+    return [{"page": 1, "text": text}] if text.strip() else []
 
 
 # --- PDF: line extraction, boilerplate filtering, markdown reconstruction ----
@@ -66,38 +82,50 @@ def _page_lines(page) -> list[dict]:
 def _parse_pdf(path: Path) -> list[dict]:
     with fitz.open(path) as doc:
         per_page = [_page_lines(page) for page in doc]
-    n_pages = len(per_page)
+        n_pages = len(per_page)
 
-    # A line is boilerplate if it repeats across >= half the pages, or matches a
-    # known header/footer pattern (page numbers, PSREF markers).
-    freq: Counter[str] = Counter()
-    for lines in per_page:
-        for text in {ln["text"] for ln in lines}:
-            freq[text] += 1
-    repeat_threshold = max(2, (n_pages + 1) // 2)
+        # A line is boilerplate if it repeats across >= half the pages, or matches
+        # a known header/footer pattern (page numbers, PSREF markers).
+        freq: Counter[str] = Counter()
+        for lines in per_page:
+            for text in {ln["text"] for ln in lines}:
+                freq[text] += 1
+        repeat_threshold = max(2, (n_pages + 1) // 2)
 
-    def is_boiler(text: str) -> bool:
-        if n_pages >= 3 and freq[text] >= repeat_threshold:
-            return True
-        if _NOF_RE.match(text):
-            return True
-        low = text.lower()
-        return any(s in low for s in _BOILER_SUBSTRINGS)
+        def is_boiler(text: str) -> bool:
+            if n_pages >= 3 and freq[text] >= repeat_threshold:
+                return True
+            if _NOF_RE.match(text):
+                return True
+            low = text.lower()
+            return any(s in low for s in _BOILER_SUBSTRINGS)
 
-    sizes = [round(ln["size"]) for lines in per_page for ln in lines if not is_boiler(ln["text"])]
-    body_size = Counter(sizes).most_common(1)[0][0] if sizes else 11
+        sizes = [round(ln["size"]) for lines in per_page for ln in lines if not is_boiler(ln["text"])]
+        body_size = Counter(sizes).most_common(1)[0][0] if sizes else 11
 
-    pages: list[dict] = []
-    skipped = 0
-    for i, lines in enumerate(per_page, start=1):
-        kept = [ln for ln in lines if not is_boiler(ln["text"])]
-        markdown = _lines_to_markdown(kept, body_size)
-        if markdown.strip():
-            pages.append({"page": i, "text": markdown})
-        else:
-            skipped += 1
-    if skipped:
-        print(f"  [parser] {path.name}: {skipped} page(s) had no text (scanned? OCR pending)")
+        pages: list[dict] = []
+        image_pages = 0
+        for i, lines in enumerate(per_page, start=1):
+            kept = [ln for ln in lines if not is_boiler(ln["text"])]
+            markdown = _lines_to_markdown(kept, body_size)
+            if markdown.strip():
+                pages.append({"page": i, "text": markdown})
+            elif not lines:
+                # True image page (no extractable text). OCR it. All-boilerplate
+                # pages (which DO have text, just filtered) are silently skipped —
+                # they are not image pages and must not be sent to OCR.
+                image_pages += 1
+                if settings.ocr_enabled:
+                    from ingestion.ocr import ocr_image_bytes
+
+                    pix = doc[i - 1].get_pixmap(dpi=settings.ocr_dpi)
+                    text = ocr_image_bytes(pix.tobytes("png"))
+                    if text.strip():
+                        pages.append({"page": i, "text": text, "ocr": True})
+
+    if image_pages:
+        action = "OCR'd" if settings.ocr_enabled else "skipped (OCR disabled)"
+        print(f"  [parser] {path.name}: {image_pages} image page(s) with no text layer — {action}")
     return pages
 
 

@@ -6,6 +6,7 @@ qdrant-client>=1.12.0     # vector store (embedded local mode or server)
 pymupdf>=1.24.0           # PDF text + layout extraction
 python-docx>=1.1.0        # DOCX
 langchain-text-splitters>=0.3.0
+rapidocr-onnxruntime>=1.3.24  # OCR for scanned PDFs/images (ONNX, no torch; incl. Chinese)
 
 # LLM (DeepSeek via LangChain provider abstraction)
 langchain>=0.3.0

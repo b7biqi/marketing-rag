@@ -5,9 +5,9 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
     PYTHONDONTWRITEBYTECODE=1
 
-# libgomp1: required by onnxruntime (fastembed). build-essential/git for any source builds.
+# libgomp1: onnxruntime (fastembed/rapidocr). libgl1/libglib2.0-0: opencv (rapidocr).
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        git build-essential libgomp1 \
+        git build-essential libgomp1 libgl1 libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /workspace

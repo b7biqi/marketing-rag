@@ -39,6 +39,10 @@ class Settings(BaseSettings):
     chunk_size: int = 1000     # ~250 tokens (size budget per chunk)
     chunk_overlap: int = 150
 
+    # --- OCR (RapidOCR; applies to image files and no-text PDF pages) ---
+    ocr_enabled: bool = True
+    ocr_dpi: int = 200         # render resolution for PDF image pages
+
     # --- Retrieval ---
     top_n: int = 30            # hybrid candidates fed to the reranker
     top_k: int = 5             # reranked chunks handed to the LLM

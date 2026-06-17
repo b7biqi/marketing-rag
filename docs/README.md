@@ -48,3 +48,4 @@ was actually done, measured, and learned in each commit.
 - [0007 — Real corpus (public Lenovo PSREF PDFs)](0007-real-corpus.md)
 - [0008 — Real-corpus ingestion fixes (boilerplate + contextual chunking)](0008-real-corpus-ingestion-fixes.md)
 - [0009 — Tighten abstention + re-run ablations on the real corpus](0009-abstention-and-real-ablations.md)
+- [0010 — OCR: when it's needed + implementation (RapidOCR)](0010-ocr-scoping.md)

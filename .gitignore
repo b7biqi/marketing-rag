@@ -8,3 +8,6 @@ venv/
 .DS_Store
 # Real corpus PDFs are fetched on demand (copyright) — not committed.
 corpus/pdfs/
+
+# OCR page-inspection renders (debug)
+ocr_debug/

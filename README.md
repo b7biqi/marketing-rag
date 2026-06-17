@@ -49,6 +49,20 @@ the Qdrant server (full BM25/IDF), not embedded mode.
 > The root `docker-compose.yml` is a standalone services-only alternative if you
 > prefer not to use the dev container.
 
+### OCR (scanned PDFs / image files)
+
+Image files (`.png/.jpg/...`) and PDF pages with no text layer are OCR'd with
+RapidOCR (ONNX, no torch; Chinese-capable) and flow through the same chunking →
+retrieval → generation path. Validate the path (rasterizes a digital page to an
+image-only PDF, OCRs it, ~90% char recovery):
+
+```bash
+MANIFEST_PATH=corpus/manifest.json python -m experiments.test_ocr
+```
+
+The current PSREF corpus is all-digital (nothing to OCR); this is a validated
+capability for scanned documents. Toggle with `OCR_ENABLED`.
+
 ## Evaluation (M0)
 
 The eval harness is the instrument behind every retrieval/generation decision —
@@ -184,7 +198,7 @@ so these are directional, not statistically strong — expanding it is a follow-
 
 ```
 config.py            # central, swappable configuration
-ingestion/           # parser, chunking, embeddings, indexer, corpus (manifest)
+ingestion/           # parser (+ OCR), chunking, embeddings, indexer, corpus (manifest)
 retrieval/           # hybrid search (RRF) + cross-encoder rerank
 llm/                 # DeepSeek generation + model-agnostic grounding
 evaluation/          # golden_set.jsonl, metrics, judge, run_eval.py
