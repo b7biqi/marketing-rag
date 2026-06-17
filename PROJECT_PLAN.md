@@ -199,6 +199,13 @@ MTEB places it among the strong open models, but we still confirm in-domain.
 / MRR on the golden set. Also record embedding latency and dimension (storage
 cost). Choose by in-domain retrieval quality, breaking ties on latency.
 
+**Result (M1, demo corpus):** `bge-small` / `bge-base` / `bge-large` score
+*identically* (quality saturated on the small corpus); they differ only in cost
+(index time 0.9 / 2.5 / 6.6 s; dim 384 / 768 / 1024). **Decision: keep `bge-small`**
+(equal quality, ~7× faster, 2.7× smaller). `bge-m3` deferred to the multilingual /
+real corpus where it can differentiate (Mandarin requirement). See README §M1 and
+docs/0006.
+
 ### 3.5 Vector store
 
 | Option | Verdict for this project |

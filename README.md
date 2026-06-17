@@ -122,6 +122,23 @@ headings are detected (e.g. raw PDFs).
 > is a Claude judge. Strategy choice is corpus-dependent; re-run on the real PDF
 > corpus (where structure-aware should pull further ahead) before locking.
 
+### M1 — embedding model (`python -m experiments.ablate_embedding`)
+
+Re-embed the corpus per model (collection rebuilt for the new dim), chunking +
+reranker fixed, `top_k=2`:
+
+| model | dim | index time | nDCG | cov@budget |
+|---|---|---|---|---|
+| **bge-small-en-v1.5** | 384 | **0.9 s** | 0.986 | 0.981 |
+| bge-base-en-v1.5 | 768 | 2.5 s | 0.986 | 0.981 |
+| bge-large-en-v1.5 | 1024 | 6.6 s | 0.986 | 0.981 |
+
+→ **Identical quality, very different cost.** On a saturated corpus the bigger
+models buy nothing, so the decision is cost: **keep `bge-small`** (~7× faster
+indexing, 2.7× smaller vectors). `bge-m3` (multilingual, native sparse) is the
+candidate to revisit for the **Mandarin/multilingual** requirement and a harder
+corpus — measured then, not paid for speculatively now.
+
 ## Layout
 
 ```
