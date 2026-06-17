@@ -16,6 +16,11 @@ class Settings(BaseSettings):
     qdrant_path: str = "./qdrant_data"
     collection_name: str = "marketing_rag"
 
+    # --- Corpus selection (switch demo <-> real by env var) ---
+    # MANIFEST_PATH / GOLDEN_PATH override these.
+    manifest_path: str = "demo_data/manifest.json"
+    golden_path: str = "evaluation/golden_set.jsonl"
+
     # --- Embedding / retrieval models (fastembed = ONNX, no torch) ---
     # These are dev defaults chosen for speed. The embedding/reranker choice is an
     # M1/M2 experiment (see PROJECT_PLAN.md §3.4, §3.8) — swap and re-measure.

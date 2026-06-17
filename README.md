@@ -139,6 +139,34 @@ indexing, 2.7× smaller vectors). `bge-m3` (multilingual, native sparse) is the
 candidate to revisit for the **Mandarin/multilingual** requirement and a harder
 corpus — measured then, not paid for speculatively now.
 
+## Real corpus (public Lenovo PSREF PDFs)
+
+Real spec sheets are **fetched on demand** (gitignored — we don't redistribute
+copyrighted PDFs); the repo commits the manifest of public URLs + a fetch script.
+
+```bash
+python -m scripts.fetch_corpus            # download PDFs listed in corpus/manifest.json
+MANIFEST_PATH=corpus/manifest.json GOLDEN_PATH=corpus/golden_set.jsonl \
+  python -m evaluation.run_eval --reindex --generation --top-k 5
+```
+
+Real-corpus eval (3 PDFs, **85 chunks** — finally non-saturating):
+
+| metric | demo (synthetic) | real (PSREF PDFs) |
+|---|---|---|
+| Recall@5 | 1.000 | 1.000 |
+| nDCG@5 | ~0.99 | 0.946 |
+| answer-kw coverage | 1.000 | **0.556** |
+| faithfulness | 1.000 | 0.778 |
+| abstention | 1.000 | 0.500 |
+
+→ Real multi-column PSREF PDFs are much harder: the two-column key/value layout
+interleaves under naive extraction, so field→value pairs fragment and the specific
+answer often misses top-k. **Grounding still holds** — when the value isn't
+retrieved the system abstains instead of inventing it. This exposes the #1
+real-world gap: **column/table-aware PDF extraction** (PROJECT_PLAN §3.1) — the next
+priority, and exactly the kind of finding synthetic data hides.
+
 ## Layout
 
 ```
@@ -148,17 +176,17 @@ retrieval/           # hybrid search (RRF) + cross-encoder rerank
 llm/                 # DeepSeek generation + model-agnostic grounding
 evaluation/          # golden_set.jsonl, metrics, judge, run_eval.py
 experiments/         # ablation scripts (ablate_chunking.py, ...)
-scripts/             # ingest.py, query.py, reindex.py CLIs
-demo_data/           # placeholder docs + manifest.json (replace with real corpus)
+scripts/             # ingest.py, query.py, reindex.py, fetch_corpus.py CLIs
+demo_data/           # synthetic demo docs + manifest.json (zero-setup default)
+corpus/              # real corpus: manifest of public PDF URLs (PDFs gitignored)
 docs/                # per-commit decision log
 ```
 
-## Next
+## Next (evidence-backed priorities)
 
-- **Corpus:** swap placeholder demo docs for the real public corpus (incl. scanned
-  PDFs + images); update `golden_set.jsonl` accordingly.
-- **M1 (cont.):** embedding-model ablation (`bge-small` vs `bge-m3` vs `bge-large`)
-  through the harness; add a token-budget-normalized context-precision metric to
-  de-bias the chunking call.
-- **M2:** fusion (RRF vs weighted) and reranker (`bge-reranker-v2-m3` vs ms-marco)
-  ablations; record the headline retrieval table.
+- **Column/table-aware PDF extraction** — the real corpus showed naive extraction
+  fragments two-column PSREF tables (coverage 0.556). Add pdfplumber/Docling or
+  column detection; should lift coverage and fix section attribution.
+- **Re-run ablations on the real corpus** now that metrics are non-saturating.
+- **M2:** fusion (RRF vs weighted) and reranker (`bge-reranker-v2-m3` vs ms-marco);
+  add multilingual content to exercise `bge-m3`.

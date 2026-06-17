@@ -1,0 +1,17 @@
+[
+  {
+    "file": "pdfs/ThinkPad_X1_Carbon_Gen_13_Spec.pdf",
+    "url": "https://psref.lenovo.com/syspool/Sys/PDF/ThinkPad/ThinkPad_X1_Carbon_Gen_13/ThinkPad_X1_Carbon_Gen_13_Spec.pdf",
+    "doc_type": "spec", "product": "ThinkPad X1 Carbon Gen 13", "region": "global", "version": "2026"
+  },
+  {
+    "file": "pdfs/ThinkPad_T14_Gen_6_Intel_Spec.pdf",
+    "url": "https://psref.lenovo.com/syspool/Sys/PDF/ThinkPad/ThinkPad_T14_Gen_6_Intel/ThinkPad_T14_Gen_6_Intel_Spec.pdf",
+    "doc_type": "spec", "product": "ThinkPad T14 Gen 6 Intel", "region": "global", "version": "2026"
+  },
+  {
+    "file": "pdfs/ThinkPad_P16_Gen_3_Spec.pdf",
+    "url": "https://psref.lenovo.com/syspool/Sys/PDF/ThinkPad/ThinkPad_P16_Gen_3/ThinkPad_P16_Gen_3_Spec.pdf",
+    "doc_type": "spec", "product": "ThinkPad P16 Gen 3", "region": "global", "version": "2026"
+  }
+]

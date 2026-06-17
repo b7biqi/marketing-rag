@@ -1,0 +1,11 @@
+{"id": "r01", "type": "numeric", "question": "What is the starting weight of the ThinkPad X1 Carbon Gen 13 with a U or H series processor?", "relevant_sources": ["ThinkPad_X1_Carbon_Gen_13_Spec.pdf"], "answer_keywords": ["1006 g"]}
+{"id": "r02", "type": "factual", "question": "Which Intel Core Ultra processor series does the ThinkPad X1 Carbon Gen 13 offer?", "relevant_sources": ["ThinkPad_X1_Carbon_Gen_13_Spec.pdf"], "answer_keywords": ["V, U or H Series"]}
+{"id": "r03", "type": "numeric", "question": "What is the starting weight of the ThinkPad T14 Gen 6 Intel?", "relevant_sources": ["ThinkPad_T14_Gen_6_Intel_Spec.pdf"], "answer_keywords": ["1.59 kg"]}
+{"id": "r04", "type": "numeric", "question": "What are the dimensions of the ThinkPad T14 Gen 6 Intel?", "relevant_sources": ["ThinkPad_T14_Gen_6_Intel_Spec.pdf"], "answer_keywords": ["315.9"]}
+{"id": "r05", "type": "numeric", "question": "What is the maximum memory of the ThinkPad P16 Gen 3?", "relevant_sources": ["ThinkPad_P16_Gen_3_Spec.pdf"], "answer_keywords": ["128GB"]}
+{"id": "r06", "type": "numeric", "question": "What is the starting weight of the ThinkPad P16 Gen 3?", "relevant_sources": ["ThinkPad_P16_Gen_3_Spec.pdf"], "answer_keywords": ["2.54 kg"]}
+{"id": "r07", "type": "factual", "question": "Which processor series does the ThinkPad P16 Gen 3 use?", "relevant_sources": ["ThinkPad_P16_Gen_3_Spec.pdf"], "answer_keywords": ["HX Series"]}
+{"id": "r08", "type": "disambiguation", "question": "Which ThinkPad model supports ECC memory?", "relevant_sources": ["ThinkPad_P16_Gen_3_Spec.pdf"], "answer_keywords": ["ECC"]}
+{"id": "r09", "type": "cross_document", "question": "What is the weight difference between the ThinkPad X1 Carbon Gen 13 and the ThinkPad P16 Gen 3?", "relevant_sources": ["ThinkPad_X1_Carbon_Gen_13_Spec.pdf", "ThinkPad_P16_Gen_3_Spec.pdf"], "answer_keywords": ["1006 g", "2.54 kg"]}
+{"id": "r10", "type": "negative", "question": "What is the retail price of the ThinkPad P16 Gen 3?", "relevant_sources": [], "answer_keywords": []}
+{"id": "r11", "type": "negative", "question": "Does the ThinkPad X1 Carbon Gen 13 ship with macOS?", "relevant_sources": [], "answer_keywords": []}

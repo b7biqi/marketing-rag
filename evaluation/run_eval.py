@@ -32,11 +32,8 @@ from ingestion.corpus import reindex
 from ingestion.indexer import get_client
 from retrieval.retriever import hybrid_search, retrieve
 
-GOLDEN = Path("evaluation/golden_set.jsonl")
-
-
 def load_golden() -> list[dict]:
-    lines = GOLDEN.read_text(encoding="utf-8").splitlines()
+    lines = Path(settings.golden_path).read_text(encoding="utf-8").splitlines()
     return [json.loads(line) for line in lines if line.strip()]
 
 

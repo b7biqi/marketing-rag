@@ -24,6 +24,7 @@ def main() -> None:
     ap.add_argument("--region", default=None, help="Filter by region")
     ap.add_argument("--no-generate", action="store_true",
                     help="Show retrieved chunks only, skip the LLM")
+    ap.add_argument("--top-k", type=int, default=None, help="Number of chunks to retrieve")
     args = ap.parse_args()
 
     filters = {k: v for k, v in {
@@ -32,7 +33,7 @@ def main() -> None:
         "region": args.region,
     }.items() if v}
 
-    points = retrieve(args.query, filters=filters or None)
+    points = retrieve(args.query, filters=filters or None, top_k=args.top_k)
 
     if not points:
         print("No results. Have you ingested any documents?")

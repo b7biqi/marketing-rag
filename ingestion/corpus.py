@@ -16,29 +16,33 @@ from ingestion.chunking import chunk_pages
 from ingestion.indexer import ensure_collection, index_chunks
 from ingestion.parser import parse_file
 
-DEMO_DIR = Path("demo_data")
-MANIFEST = DEMO_DIR / "manifest.json"
+def load_manifest(manifest_path: str | None = None) -> list[dict]:
+    path = Path(manifest_path or settings.manifest_path)
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
-def load_manifest() -> list[dict]:
-    return json.loads(MANIFEST.read_text(encoding="utf-8"))
+def reindex(client: QdrantClient, manifest_path: str | None = None) -> int:
+    """Drop and rebuild the collection from the manifest. Returns chunk count.
 
+    File paths in the manifest are resolved relative to the manifest's directory,
+    so the same code serves both the demo corpus and the real PDF corpus.
+    """
+    path = Path(manifest_path or settings.manifest_path)
+    base_dir = path.parent
 
-def reindex(client: QdrantClient) -> int:
-    """Drop and rebuild the collection from the manifest. Returns chunk count."""
     if client.collection_exists(settings.collection_name):
         client.delete_collection(settings.collection_name)
     ensure_collection(client)
 
     total = 0
-    for entry in load_manifest():
-        file = DEMO_DIR / entry["file"]
+    for entry in load_manifest(str(path)):
+        file = base_dir / entry["file"]
         pages = parse_file(file)
         if not pages:
             continue
         base_metadata = {
             "doc_id": Path(entry["file"]).stem,
-            "source": entry["file"],
+            "source": Path(entry["file"]).name,
             "doc_type": entry["doc_type"],
             "product": entry["product"],
             "region": entry.get("region", "global"),

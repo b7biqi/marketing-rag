@@ -6,3 +6,5 @@ __pycache__/
 venv/
 .fastembed_cache/
 .DS_Store
+# Real corpus PDFs are fetched on demand (copyright) — not committed.
+corpus/pdfs/
