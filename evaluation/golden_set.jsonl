@@ -1,0 +1,18 @@
+{"id": "q01", "type": "factual", "question": "What is the battery life of the ThinkPad X1 Carbon?", "relevant_sources": ["thinkpad_x1_spec.md"], "answer_keywords": ["18 hours", "MobileMark"]}
+{"id": "q02", "type": "numeric", "question": "How much does the ThinkPad X1 Carbon weigh?", "relevant_sources": ["thinkpad_x1_spec.md"], "answer_keywords": ["1.09 kg"]}
+{"id": "q03", "type": "numeric", "question": "What is the maximum memory in the ThinkPad X1 Carbon?", "relevant_sources": ["thinkpad_x1_spec.md"], "answer_keywords": ["32 GB", "LPDDR5x"]}
+{"id": "q04", "type": "factual", "question": "Which processor does the ThinkPad T14 use?", "relevant_sources": ["thinkpad_t14_spec.md"], "answer_keywords": ["Ryzen 7 PRO 8840U"]}
+{"id": "q05", "type": "disambiguation", "question": "Which laptop has a built-in Ethernet RJ45 port?", "relevant_sources": ["thinkpad_t14_spec.md"], "answer_keywords": ["RJ45", "Ethernet"]}
+{"id": "q06", "type": "numeric", "question": "What is the maximum memory capacity of the ThinkPad T14?", "relevant_sources": ["thinkpad_t14_spec.md"], "answer_keywords": ["64 GB"]}
+{"id": "q07", "type": "cross_document", "question": "What is the weight difference between the ThinkPad X1 Carbon and the ThinkPad T14?", "relevant_sources": ["thinkpad_x1_spec.md", "thinkpad_t14_spec.md"], "answer_keywords": ["1.09", "1.36"]}
+{"id": "q08", "type": "paraphrase", "question": "How long does it take to charge the X1 Carbon to 80 percent?", "relevant_sources": ["thinkpad_x1_spec.md"], "answer_keywords": ["60 minutes", "Rapid Charge"]}
+{"id": "q09", "type": "numeric", "question": "What is the display resolution of the ThinkPad X1 Carbon OLED panel?", "relevant_sources": ["thinkpad_x1_spec.md"], "answer_keywords": ["2.8K", "OLED"]}
+{"id": "q10", "type": "brand", "question": "Do performance claims in marketing need to be cited?", "relevant_sources": ["brand_guidelines.md"], "answer_keywords": ["verifiable source", "citation"]}
+{"id": "q11", "type": "brand", "question": "What security language is prohibited in marketing copy?", "relevant_sources": ["brand_guidelines.md"], "answer_keywords": ["unhackable", "100% secure"]}
+{"id": "q12", "type": "brand", "question": "For a CIO security audience, what should marketing emphasize?", "relevant_sources": ["brand_guidelines.md"], "answer_keywords": ["manageability", "supply-chain", "total cost of ownership"]}
+{"id": "q13", "type": "compliance", "question": "What does the self-healing BIOS feature do?", "relevant_sources": ["security_whitepaper.md"], "answer_keywords": ["known-good", "firmware"]}
+{"id": "q14", "type": "compliance", "question": "Which ISO standard is the security management program certified to?", "relevant_sources": ["security_whitepaper.md"], "answer_keywords": ["ISO 27001"]}
+{"id": "q15", "type": "compliance", "question": "How does ThinkShield support secure device decommissioning?", "relevant_sources": ["security_whitepaper.md"], "answer_keywords": ["secure-wipe", "cryptographic erase"]}
+{"id": "q16", "type": "negative", "question": "What is the retail price of the ThinkPad X1 Carbon?", "relevant_sources": [], "answer_keywords": []}
+{"id": "q17", "type": "negative", "question": "Does the ThinkPad X1 Carbon run macOS?", "relevant_sources": [], "answer_keywords": []}
+{"id": "q18", "type": "negative", "question": "Who is the CEO of the company that makes these laptops?", "relevant_sources": [], "answer_keywords": []}
