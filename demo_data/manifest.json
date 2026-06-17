@@ -6,5 +6,6 @@
   {"file": "warranty_support.md",        "doc_type": "support",    "product": "all",          "region": "global", "version": "2025"},
   {"file": "sustainability_compliance.md","doc_type": "compliance","product": "all",          "region": "global", "version": "2025"},
   {"file": "deployment_guide.md",        "doc_type": "support",    "product": "all",          "region": "global", "version": "2025"},
-  {"file": "brand_guidelines.md",        "doc_type": "brand",      "product": "all",          "region": "global", "version": "2025"}
+  {"file": "brand_guidelines.md",        "doc_type": "brand",      "product": "all",          "region": "global", "version": "2025"},
+  {"file": "scanned/thinkpad_z13_service_bulletin.png", "doc_type": "support", "product": "ThinkPad Z13", "region": "global", "version": "2025"}
 ]

@@ -6,8 +6,9 @@ ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1
 
 # libgomp1: onnxruntime (fastembed/rapidocr). libgl1/libglib2.0-0: opencv (rapidocr).
+# fonts-noto-cjk: render Chinese text for the multilingual OCR test.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        git build-essential libgomp1 libgl1 libglib2.0-0 \
+        git build-essential libgomp1 libgl1 libglib2.0-0 fonts-noto-cjk \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /workspace

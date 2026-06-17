@@ -29,3 +29,4 @@
 {"id": "q29", "type": "long_section", "question": "What is the recommended firmware baseline version for production fleets?", "relevant_sources": ["deployment_guide.md"], "answer_keywords": ["2.4.1"]}
 {"id": "q30", "type": "long_section", "question": "What network-boot workflow is used for fleet imaging?", "relevant_sources": ["deployment_guide.md"], "answer_keywords": ["PXE"]}
 {"id": "q31", "type": "long_section", "question": "What is the minimum BIOS version required for secured-core operation?", "relevant_sources": ["deployment_guide.md"], "answer_keywords": ["1.38"]}
+{"id": "q32", "type": "ocr", "question": "What is the recommended thermal paste reapplication interval for the ThinkPad Z13?", "relevant_sources": ["thinkpad_z13_service_bulletin.png"], "answer_keywords": ["24 months"]}
