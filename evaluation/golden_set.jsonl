@@ -13,6 +13,16 @@
 {"id": "q13", "type": "compliance", "question": "What does the self-healing BIOS feature do?", "relevant_sources": ["security_whitepaper.md"], "answer_keywords": ["known-good", "firmware"]}
 {"id": "q14", "type": "compliance", "question": "Which ISO standard is the security management program certified to?", "relevant_sources": ["security_whitepaper.md"], "answer_keywords": ["ISO 27001"]}
 {"id": "q15", "type": "compliance", "question": "How does ThinkShield support secure device decommissioning?", "relevant_sources": ["security_whitepaper.md"], "answer_keywords": ["secure-wipe", "cryptographic erase"]}
-{"id": "q16", "type": "negative", "question": "What is the retail price of the ThinkPad X1 Carbon?", "relevant_sources": [], "answer_keywords": []}
-{"id": "q17", "type": "negative", "question": "Does the ThinkPad X1 Carbon run macOS?", "relevant_sources": [], "answer_keywords": []}
-{"id": "q18", "type": "negative", "question": "Who is the CEO of the company that makes these laptops?", "relevant_sources": [], "answer_keywords": []}
+{"id": "q16", "type": "factual", "question": "Which graphics card does the ThinkPad P16 mobile workstation use?", "relevant_sources": ["thinkpad_p16_spec.md"], "answer_keywords": ["RTX 5000 Ada"]}
+{"id": "q17", "type": "numeric", "question": "What is the maximum memory in the ThinkPad P16?", "relevant_sources": ["thinkpad_p16_spec.md"], "answer_keywords": ["192 GB"]}
+{"id": "q18", "type": "disambiguation", "question": "Which model has a discrete NVIDIA professional GPU?", "relevant_sources": ["thinkpad_p16_spec.md"], "answer_keywords": ["NVIDIA", "RTX 5000 Ada"]}
+{"id": "q19", "type": "factual", "question": "How long is the base warranty on ThinkPad commercial laptops?", "relevant_sources": ["warranty_support.md"], "answer_keywords": ["3-year"]}
+{"id": "q20", "type": "factual", "question": "What does Accidental Damage Protection cover?", "relevant_sources": ["warranty_support.md"], "answer_keywords": ["drops", "spills"]}
+{"id": "q21", "type": "factual", "question": "What is Premier Support?", "relevant_sources": ["warranty_support.md"], "answer_keywords": ["24x7", "single point of contact"]}
+{"id": "q22", "type": "compliance", "question": "What is the EPEAT rating of the ThinkPad product lines?", "relevant_sources": ["sustainability_compliance.md"], "answer_keywords": ["EPEAT Gold"]}
+{"id": "q23", "type": "compliance", "question": "Are the products ENERGY STAR certified?", "relevant_sources": ["sustainability_compliance.md"], "answer_keywords": ["ENERGY STAR"]}
+{"id": "q24", "type": "compliance", "question": "Which hazardous-substance regulations do the products comply with?", "relevant_sources": ["sustainability_compliance.md"], "answer_keywords": ["RoHS", "REACH"]}
+{"id": "q25", "type": "negative", "question": "What is the retail price of the ThinkPad X1 Carbon?", "relevant_sources": [], "answer_keywords": []}
+{"id": "q26", "type": "negative", "question": "Does the ThinkPad X1 Carbon run macOS?", "relevant_sources": [], "answer_keywords": []}
+{"id": "q27", "type": "negative", "question": "Who is the CEO of the company that makes these laptops?", "relevant_sources": [], "answer_keywords": []}
+{"id": "q28", "type": "negative", "question": "Does the laptop come with a free printer?", "relevant_sources": [], "answer_keywords": []}

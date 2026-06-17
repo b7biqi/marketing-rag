@@ -1,6 +1,9 @@
 [
-  {"file": "thinkpad_x1_spec.md",   "doc_type": "spec",       "product": "ThinkPad X1",  "region": "global", "version": "2025"},
-  {"file": "thinkpad_t14_spec.md",  "doc_type": "spec",       "product": "ThinkPad T14", "region": "global", "version": "2025"},
-  {"file": "security_whitepaper.md","doc_type": "compliance", "product": "all",          "region": "global", "version": "2025"},
-  {"file": "brand_guidelines.md",   "doc_type": "brand",      "product": "all",          "region": "global", "version": "2025"}
+  {"file": "thinkpad_x1_spec.md",        "doc_type": "spec",       "product": "ThinkPad X1",  "region": "global", "version": "2025"},
+  {"file": "thinkpad_t14_spec.md",       "doc_type": "spec",       "product": "ThinkPad T14", "region": "global", "version": "2025"},
+  {"file": "thinkpad_p16_spec.md",       "doc_type": "spec",       "product": "ThinkPad P16", "region": "global", "version": "2025"},
+  {"file": "security_whitepaper.md",     "doc_type": "compliance", "product": "all",          "region": "global", "version": "2025"},
+  {"file": "warranty_support.md",        "doc_type": "support",    "product": "all",          "region": "global", "version": "2025"},
+  {"file": "sustainability_compliance.md","doc_type": "compliance","product": "all",          "region": "global", "version": "2025"},
+  {"file": "brand_guidelines.md",        "doc_type": "brand",      "product": "all",          "region": "global", "version": "2025"}
 ]

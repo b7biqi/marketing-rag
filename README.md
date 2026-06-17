@@ -69,21 +69,43 @@ python -m evaluation.run_eval --top-k 1
 python -m evaluation.run_eval --generation
 ```
 
-**Measured baseline** (4-doc / 8-chunk demo corpus, `bge-small` + `bm25` RRF):
+**Measured baseline** (7-doc / 14-chunk demo corpus, 28-question golden set,
+`bge-small` + `bm25` RRF, `1000/150` chunks):
+
+Reranking ablation at `top_k=1` (n=24 answerable):
 
 | Config | Recall@1 | MRR@1 | nDCG@1 |
 |---|---|---|---|
 | hybrid + rerank | **1.000** | **1.000** | **1.000** |
-| hybrid only (no rerank) | 0.933 | 0.933 | 0.933 |
+| hybrid only (no rerank) | 0.917 | 0.917 | 0.917 |
+
+→ the cross-encoder reranker corrects ~2/24 questions hybrid mis-ranks. **Decision:
+keep the reranker.**
 
 Generation (`top_k=3`): faithfulness **1.000**, answer relevancy **1.000**,
-abstention on negatives **1.000** (3/3 unanswerable questions correctly declined).
+abstention on negatives **1.000** (4/4 unanswerable questions correctly declined).
 
-> ⚠️ The demo corpus is tiny, so metrics saturate at `top_k≥3`. The point of M0
-> is the *instrument* and the first measured signal (reranking lifts precision@1
-> 0.933→1.000); the discriminating numbers come with the real/larger corpus and
-> the M1–M2 ablations. The LLM judge currently reuses the generator (DeepSeek) —
-> bias caveat noted; target is a Claude judge.
+### M1 — chunking ablation (`python -m experiments.ablate_chunking`)
+
+`chunk_size` × `overlap`, index rebuilt per config, scored at `top_k=3`:
+
+| chunk_size | overlap | chunks | Recall | MRR | nDCG | kw coverage |
+|---|---|---|---|---|---|---|
+| 300 | 0 / 45 | 47 | 1.000 | 0.979 | 0.981 | 0.792 |
+| 500 | 0 / 75 | 26 | 1.000 | 1.000 | 0.987 | 0.833 |
+| **1000** | **150** | **14** | 1.000 | 1.000 | **0.993** | **1.000** |
+
+→ Larger chunks keep related facts together, so a retrieved chunk holds the whole
+answer; small chunks split facts. Overlap is negligible at these sizes.
+**Decision: keep `1000/150`.**
+
+> ⚠️ Two honesty caveats. (1) On this small corpus, ranking metrics (Recall/MRR/
+> nDCG) are near-saturated; the moving signal is keyword coverage, which is *partly
+> biased* toward larger chunks (more text mechanically contains more keywords). So
+> this validates the default but isn't a clean win — a precision-normalized metric
+> (context precision) and the real corpus are needed for a strong call. (2) The LLM
+> judge currently reuses the generator (DeepSeek) — bias caveat; target is a Claude
+> judge.
 
 ## Layout
 
@@ -93,15 +115,18 @@ ingestion/           # parser, chunking, embeddings, indexer, corpus (manifest)
 retrieval/           # hybrid search (RRF) + cross-encoder rerank
 llm/                 # DeepSeek generation + model-agnostic grounding
 evaluation/          # golden_set.jsonl, metrics, judge, run_eval.py
+experiments/         # ablation scripts (ablate_chunking.py, ...)
 scripts/             # ingest.py, query.py, reindex.py CLIs
 demo_data/           # placeholder docs + manifest.json (replace with real corpus)
+docs/                # per-commit decision log
 ```
 
 ## Next
 
 - **Corpus:** swap placeholder demo docs for the real public corpus (incl. scanned
   PDFs + images); update `golden_set.jsonl` accordingly.
-- **M1:** chunking (size × overlap × strategy) and embedding-model ablations,
-  measured with `run_eval.py`; lock the winners.
+- **M1 (cont.):** embedding-model ablation (`bge-small` vs `bge-m3` vs `bge-large`)
+  through the harness; add a token-budget-normalized context-precision metric to
+  de-bias the chunking call.
 - **M2:** fusion (RRF vs weighted) and reranker (`bge-reranker-v2-m3` vs ms-marco)
   ablations; record the headline retrieval table.
