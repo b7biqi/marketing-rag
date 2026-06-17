@@ -42,3 +42,4 @@ was actually done, measured, and learned in each commit.
 - [0001 — Initial RAG pipeline](0001-initial-rag-pipeline.md)
 - [0002 — Evaluation harness + demo corpus (M0)](0002-evaluation-harness.md)
 - [0003 — Corpus expansion + chunking ablation (M1)](0003-chunking-ablation.md)
+- [0004 — Chunking strategies + de-biased metric (M1)](0004-chunking-strategies.md)

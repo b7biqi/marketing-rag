@@ -26,3 +26,6 @@
 {"id": "q26", "type": "negative", "question": "Does the ThinkPad X1 Carbon run macOS?", "relevant_sources": [], "answer_keywords": []}
 {"id": "q27", "type": "negative", "question": "Who is the CEO of the company that makes these laptops?", "relevant_sources": [], "answer_keywords": []}
 {"id": "q28", "type": "negative", "question": "Does the laptop come with a free printer?", "relevant_sources": [], "answer_keywords": []}
+{"id": "q29", "type": "long_section", "question": "What is the recommended firmware baseline version for production fleets?", "relevant_sources": ["deployment_guide.md"], "answer_keywords": ["2.4.1"]}
+{"id": "q30", "type": "long_section", "question": "What network-boot workflow is used for fleet imaging?", "relevant_sources": ["deployment_guide.md"], "answer_keywords": ["PXE"]}
+{"id": "q31", "type": "long_section", "question": "What is the minimum BIOS version required for secured-core operation?", "relevant_sources": ["deployment_guide.md"], "answer_keywords": ["1.38"]}

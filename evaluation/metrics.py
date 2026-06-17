@@ -43,5 +43,27 @@ def keyword_coverage(context: str, keywords: list[str]) -> float | None:
     return hits / len(keywords)
 
 
+def coverage_at_budget(
+    texts_in_rank_order: list[str], keywords: list[str], budget_chars: int
+) -> float | None:
+    """Keyword coverage within a fixed *context budget*, not a fixed chunk count.
+
+    Fills the budget greedily with whole chunks in rank order, then measures
+    coverage. This de-biases chunk-size/strategy comparison: bigger chunks fill the
+    budget with fewer, more-contiguous chunks; smaller chunks fit more, more-diverse
+    chunks. Same budget for all → a fair "how much answer per token of context" test.
+    """
+    if not keywords:
+        return None
+    acc: list[str] = []
+    total = 0
+    for t in texts_in_rank_order:
+        acc.append(t)
+        total += len(t)
+        if total >= budget_chars:
+            break
+    return keyword_coverage(" ".join(acc), keywords)
+
+
 def mean(xs: list[float]) -> float:
     return sum(xs) / len(xs) if xs else 0.0

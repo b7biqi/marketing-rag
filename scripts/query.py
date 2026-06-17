@@ -51,7 +51,8 @@ def main() -> None:
     print(answer)
     print("\n=== Sources ===")
     for s in sources_table(points):
-        print(f"  [{s['index']}] {s['source']} (p.{s['page']}, {s['doc_type']})")
+        sec = f", {s['section']}" if s["section"] else ""
+        print(f"  [{s['index']}] {s['source']} (p.{s['page']}{sec}, {s['doc_type']})")
 
 
 if __name__ == "__main__":

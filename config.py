@@ -23,8 +23,15 @@ class Settings(BaseSettings):
     sparse_model: str = "Qdrant/bm25"                # lexical arm of hybrid
     reranker_model: str = "Xenova/ms-marco-MiniLM-L-6-v2"
 
-    # --- Chunking (character-based for now; token-bounding is an M1 experiment) ---
-    chunk_size: int = 1000     # ~250 tokens
+    # --- Chunking ---
+    # Strategy chosen by experiment (experiments/ablate_strategy.py). On the demo
+    # corpus structure/recursive/paragraph tie on coverage; "structure" (hybrid:
+    # heading split + recursive fallback + small-section packing) is the default
+    # because it adds `section` metadata for citations and degrades to recursive
+    # on un-headed PDFs. Options: fixed | recursive | sentence | paragraph |
+    # structure | semantic.
+    chunk_strategy: str = "structure"
+    chunk_size: int = 1000     # ~250 tokens (size budget per chunk)
     chunk_overlap: int = 150
 
     # --- Retrieval ---

@@ -21,6 +21,7 @@ from pathlib import Path
 
 from config import settings
 from evaluation.metrics import (
+    coverage_at_budget,
     keyword_coverage,
     mean,
     ndcg_at_k,
@@ -45,27 +46,40 @@ def get_points(question: str, no_rerank: bool, top_k: int):
     return retrieve(question, top_k=top_k)
 
 
-def evaluate_retrieval(golden: list[dict], no_rerank: bool, top_k: int) -> dict:
-    """Compute retrieval metrics over the answerable questions. Returns a dict."""
+def evaluate_retrieval(
+    golden: list[dict], no_rerank: bool, top_k: int, budget_chars: int | None = None
+) -> dict:
+    """Compute retrieval metrics over the answerable questions. Returns a dict.
+
+    If budget_chars is set, also report size-neutral coverage at that context
+    budget (de-biases chunk-size/strategy comparison).
+    """
     answerable = [g for g in golden if g["type"] != "negative"]
-    recalls, rrs, ndcgs, covs = [], [], [], []
+    recalls, rrs, ndcgs, covs, bcovs = [], [], [], [], []
     for g in answerable:
         points = get_points(g["question"], no_rerank, top_k)
         flags = [p.payload.get("source") in g["relevant_sources"] for p in points]
         recalls.append(recall_at_k(flags))
         rrs.append(reciprocal_rank(flags))
         ndcgs.append(ndcg_at_k(flags, top_k))
-        context = " ".join(p.payload.get("text", "") for p in points)
-        cov = keyword_coverage(context, g.get("answer_keywords"))
+        texts = [p.payload.get("text", "") for p in points]
+        cov = keyword_coverage(" ".join(texts), g.get("answer_keywords"))
         if cov is not None:
             covs.append(cov)
-    return {
+        if budget_chars is not None:
+            bcov = coverage_at_budget(texts, g.get("answer_keywords"), budget_chars)
+            if bcov is not None:
+                bcovs.append(bcov)
+    result = {
         "n": len(answerable),
         "recall": mean(recalls),
         "mrr": mean(rrs),
         "ndcg": mean(ndcgs),
         "coverage": mean(covs),
     }
+    if budget_chars is not None:
+        result["budget_coverage"] = mean(bcovs)
+    return result
 
 
 def evaluate_generation(golden: list[dict], no_rerank: bool, top_k: int) -> dict:

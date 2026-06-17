@@ -1,0 +1,16 @@
+# Enterprise Deployment Guide (PLACEHOLDER DEMO DATA)
+
+> Synthetic content for pipeline + evaluation testing only. Replace with the real demo corpus.
+> NOTE: this doc deliberately contains one very long, unbroken section to stress
+> chunking strategies (the "long section" scenario).
+
+## Overview
+This guide covers fleet provisioning, imaging, firmware management, and ongoing
+support for large ThinkPad deployments.
+
+## Deployment Considerations
+Planning a large ThinkPad rollout begins well before the first device is unboxed. IT teams should start by defining hardware baselines, network prerequisites, and the imaging pipeline that will be used across the fleet. For organizations standardizing on a single image, the recommended approach is a thin base image layered with application packages delivered post-provision, which keeps the golden image small and reduces the surface area for drift over time. The reference imaging workflow for this lineup uses a PXE network-boot sequence that is compatible with common deployment suites, allowing zero-touch provisioning when DHCP options are configured to point at the deployment server. Before enabling secured-core features across the fleet, confirm that every target device meets the firmware floor: the minimum supported BIOS for secured-core operation is version 1.38, and devices below that level must be updated through the standard firmware tool before secured-core policies are pushed. Firmware management itself should be centralized; the recommended firmware baseline for production fleets at the time of this guide is version 2.4.1, which aligns the self-healing BIOS behavior, the measured-boot configuration, and the supervisor password policy across models. Teams that operate mixed fleets of X1, T14, and P16 systems should note that while the firmware baseline version is shared, the update payloads are model-specific and must be staged per model in the deployment server. Network prerequisites are frequently underestimated: the imaging server should sit on a subnet with sufficient bandwidth for parallel provisioning, and organizations imaging more than fifty devices concurrently are advised to segment provisioning traffic onto a dedicated VLAN to avoid saturating shared links. Once devices are provisioned, ongoing management is handled through the standard endpoint management agent, which reports firmware level, encryption status, and warranty entitlement back to the central console. For asset tracking, each device exposes its serial number and a unique hardware identifier that can be read programmatically during provisioning and written into the asset database, removing the need for manual barcode scanning. Decommissioning should follow the secure-wipe procedure described in the security whitepaper, and the endpoint agent should be retired from the console to free the license seat. Finally, support entitlements should be verified at provisioning time so that any dead-on-arrival units can be escalated under warranty before they reach end users.
+
+## Post-Deployment Checklist
+After rollout, validate firmware levels, confirm encryption is active, and verify
+that each device has checked in to the management console at least once.

@@ -41,13 +41,19 @@ def get_llm():
     )
 
 
+def _cite(md: dict) -> str:
+    parts = [f"source: {md.get('source', '?')}", f"page {md.get('page', '?')}"]
+    section = md.get("section")
+    if section:
+        parts.append(f"section: {section}")
+    return ", ".join(parts)
+
+
 def format_context(points) -> str:
     blocks = []
     for i, p in enumerate(points, start=1):
         md = p.payload or {}
-        source = md.get("source", "?")
-        page = md.get("page", "?")
-        blocks.append(f"[{i}] (source: {source}, page {page})\n{md.get('text', '')}")
+        blocks.append(f"[{i}] ({_cite(md)})\n{md.get('text', '')}")
     return "\n\n".join(blocks)
 
 
@@ -76,6 +82,7 @@ def sources_table(points) -> list[dict]:
             "index": i,
             "source": md.get("source", "?"),
             "page": md.get("page", "?"),
+            "section": md.get("section", ""),
             "doc_type": md.get("doc_type", "?"),
         })
     return table

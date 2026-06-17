@@ -168,6 +168,15 @@ assumed.
 nDCG@10 on the golden set, plus RAGAS context precision on a generation subset.
 Lock the winning configuration and record the table in the README.
 
+**Result (M1, demo corpus):** implemented 6 strategies (fixed / recursive /
+sentence / paragraph / structure / semantic) + a size-neutral **coverage-at-budget**
+metric to de-bias the comparison. Findings: `fixed` is worst (clips facts),
+`semantic` gives no gain at higher compute, and recursive/paragraph/structure tie
+on retrieval. Default set to **`structure`** (hybrid: heading split + recursive
+fallback for long sections + small-section packing) for its `section` citation
+metadata; `recursive` is the auto-fallback on un-headed PDFs. Size locked at
+`1000/150`. Re-confirm on the real PDF corpus. See README §M1 and docs/0004.
+
 ### 3.4 Embedding model
 
 | Option | Notes |

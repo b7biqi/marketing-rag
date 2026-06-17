@@ -85,27 +85,42 @@ keep the reranker.**
 Generation (`top_k=3`): faithfulness **1.000**, answer relevancy **1.000**,
 abstention on negatives **1.000** (4/4 unanswerable questions correctly declined).
 
-### M1 — chunking ablation (`python -m experiments.ablate_chunking`)
+### M1 — chunking ablations
 
-`chunk_size` × `overlap`, index rebuilt per config, scored at `top_k=3`:
+**Size × overlap** (`python -m experiments.ablate_chunking`, `top_k=3`):
 
-| chunk_size | overlap | chunks | Recall | MRR | nDCG | kw coverage |
-|---|---|---|---|---|---|---|
-| 300 | 0 / 45 | 47 | 1.000 | 0.979 | 0.981 | 0.792 |
-| 500 | 0 / 75 | 26 | 1.000 | 1.000 | 0.987 | 0.833 |
-| **1000** | **150** | **14** | 1.000 | 1.000 | **0.993** | **1.000** |
+| chunk_size | overlap | chunks | nDCG | kw coverage |
+|---|---|---|---|---|
+| 300 | 0 / 45 | 47 | 0.981 | 0.792 |
+| 500 | 0 / 75 | 26 | 0.987 | 0.833 |
+| **1000** | **150** | 14 | **0.993** | 1.000 |
 
-→ Larger chunks keep related facts together, so a retrieved chunk holds the whole
-answer; small chunks split facts. Overlap is negligible at these sizes.
-**Decision: keep `1000/150`.**
+→ Larger chunks keep related facts together; overlap is negligible. **Keep `1000/150`.**
 
-> ⚠️ Two honesty caveats. (1) On this small corpus, ranking metrics (Recall/MRR/
-> nDCG) are near-saturated; the moving signal is keyword coverage, which is *partly
-> biased* toward larger chunks (more text mechanically contains more keywords). So
-> this validates the default but isn't a clean win — a precision-normalized metric
-> (context precision) and the real corpus are needed for a strong call. (2) The LLM
-> judge currently reuses the generator (DeepSeek) — bias caveat; target is a Claude
-> judge.
+**Strategy** (`python -m experiments.ablate_strategy`) — judged on **coverage at a
+fixed context budget** (size-neutral, so a strategy isn't rewarded for bigger
+chunks), on an 8-doc corpus that includes a deliberate **long-section** stress doc:
+
+| strategy | nDCG | cov@budget | note |
+|---|---|---|---|
+| fixed | 0.980 | 0.926 | blind splits clip facts — **worst** |
+| recursive | 0.988 | 0.981 | strong, simple |
+| sentence | 0.980 | 0.981 | never splits a sentence |
+| paragraph | 0.988 | 0.981 | |
+| **structure** (hybrid) | 0.983 | 0.981 | **+ `section` metadata for citations**; degrades to recursive on un-headed PDFs |
+| semantic | 0.988 | 0.833 | topic-split lost coverage; highest compute |
+
+→ recursive / paragraph / structure **tie** on retrieval; `fixed` and `semantic`
+lose. **Decision: default to `structure`** — tied on quality but uniquely supplies
+section-level citations (claim → file + section) and handles long *and* short
+sections in one adaptive strategy (heading split + recursive fallback for long
+sections + small-section packing). `recursive` is the automatic fallback when no
+headings are detected (e.g. raw PDFs).
+
+> The size-bias caveat from the first pass is now addressed by the `cov@budget`
+> metric. Remaining caveat: the LLM judge reuses the generator (DeepSeek) — target
+> is a Claude judge. Strategy choice is corpus-dependent; re-run on the real PDF
+> corpus (where structure-aware should pull further ahead) before locking.
 
 ## Layout
 
