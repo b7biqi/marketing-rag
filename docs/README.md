@@ -43,3 +43,4 @@ was actually done, measured, and learned in each commit.
 - [0002 — Evaluation harness + demo corpus (M0)](0002-evaluation-harness.md)
 - [0003 — Corpus expansion + chunking ablation (M1)](0003-chunking-ablation.md)
 - [0004 — Chunking strategies + de-biased metric (M1)](0004-chunking-strategies.md)
+- [0005 — PDF heading detection](0005-pdf-heading-detection.md)
