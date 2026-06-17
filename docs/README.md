@@ -47,3 +47,4 @@ was actually done, measured, and learned in each commit.
 - [0006 — Embedding-model ablation (M1)](0006-embedding-ablation.md)
 - [0007 — Real corpus (public Lenovo PSREF PDFs)](0007-real-corpus.md)
 - [0008 — Real-corpus ingestion fixes (boilerplate + contextual chunking)](0008-real-corpus-ingestion-fixes.md)
+- [0009 — Tighten abstention + re-run ablations on the real corpus](0009-abstention-and-real-ablations.md)

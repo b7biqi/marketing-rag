@@ -161,15 +161,24 @@ docs/0008) recovered most of the gap:
 | nDCG@5 | 0.946 | 0.977 |
 | answer-kw coverage | **0.556** | **0.944** |
 | faithfulness | 0.778 | 0.944 |
-| abstention (neg) | 0.500 | 0.500 |
+| abstention (neg) | 0.500 | **1.000** |
 
 → The failure was **not** column interleaving (a tempting guess). Diagnosis showed
 the right *document* was always retrieved, but repeated boilerplate (page titles,
 "PSREF") and the *wrong product's* same-field chunk outranked the real value. Fix:
 drop cross-page boilerplate in the parser, and prefix each chunk with
 `product — section` so "Max Memory: 128GB" is product-disambiguated. Coverage
-0.556 → 0.944. Grounding holds throughout (abstains rather than inventing). This is
-the kind of finding synthetic data hides — and why diagnosing beats guessing.
+0.556 → 0.944. Abstention 0.5 → 1.0 came from tightening the prompt to forbid
+outside-knowledge inference. Grounding holds throughout (abstains rather than
+inventing). This is the kind of finding synthetic data hides — and why diagnosing
+beats guessing.
+
+**Ablations re-run on the real corpus** (docs/0009) confirm the demo-corpus
+decisions hold — with honest nuance: `bge-small` still ties bigger models on
+de-biased metrics; `structure`'s *retrieval* edge disappears on real PDFs (cov@budget
+tied, nDCG marginally behind fixed/recursive), so its kept-default justification is
+now purely **section-level citations**. The real golden set is small (9 answerable),
+so these are directional, not statistically strong — expanding it is a follow-up.
 
 ## Layout
 
@@ -188,9 +197,9 @@ docs/                # per-commit decision log
 
 ## Next (evidence-backed priorities)
 
-- **Tighten abstention** — one real-corpus negative is answered instead of declined
-  (abstention 0.5); generation-side prompt/threshold work.
-- **Re-run ablations on the real corpus** now that metrics are non-saturating (the
-  earlier chunking/embedding "ties" may separate).
+- **Expand the real golden set** — 9 answerable Qs gives only directional signal;
+  more questions would make the strategy/embedding calls statistically confident.
+- **OCR the no-text pages** — each PSREF PDF has 1 page with no text layer (skipped);
+  the OCR/multimodal milestone.
 - **M2:** fusion (RRF vs weighted) and reranker (`bge-reranker-v2-m3` vs ms-marco);
   add multilingual content to exercise `bge-m3`.

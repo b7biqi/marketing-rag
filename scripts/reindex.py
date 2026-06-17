@@ -5,6 +5,7 @@ Usage:
 """
 from __future__ import annotations
 
+from config import settings
 from ingestion.corpus import reindex
 from ingestion.indexer import get_client
 
@@ -12,7 +13,7 @@ from ingestion.indexer import get_client
 def main() -> None:
     client = get_client()
     n = reindex(client)
-    print(f"Reindexed {n} chunks from demo_data/manifest.json.")
+    print(f"Reindexed {n} chunks from {settings.manifest_path}.")
 
 
 if __name__ == "__main__":
