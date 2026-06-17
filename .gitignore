@@ -1,0 +1,8 @@
+.env
+qdrant_data/
+__pycache__/
+*.pyc
+.venv/
+venv/
+.fastembed_cache/
+.DS_Store

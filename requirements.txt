@@ -1,0 +1,16 @@
+# Core RAG stack (lightweight, torch-free dev path)
+fastembed>=0.4.2          # ONNX dense + sparse embeddings + cross-encoder reranker (no torch)
+qdrant-client>=1.12.0     # vector store (embedded local mode or server)
+
+# Ingestion
+pymupdf>=1.24.0           # PDF text + layout extraction
+python-docx>=1.1.0        # DOCX
+langchain-text-splitters>=0.3.0
+
+# LLM (DeepSeek via LangChain provider abstraction)
+langchain>=0.3.0
+langchain-deepseek>=0.1.2
+
+# Config / utils
+pydantic-settings>=2.4.0
+python-dotenv>=1.0.0
