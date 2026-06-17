@@ -31,6 +31,21 @@ _HEADING = re.compile(r"^(#{1,6})\s+(.*)$", re.MULTILINE)
 
 # --- helpers ---------------------------------------------------------------
 
+def _context_prefix(md: dict) -> str:
+    """A short self-describing header for the chunk: product (or doc) + section.
+
+    Prepended to the chunk text so a bare spec value ("16GB soldered") becomes
+    product-disambiguated ("ThinkPad P16 Gen 3 — Max Memory: ..."). Diagnosed on the
+    PSREF corpus: without this, same-field chunks from different products are
+    indistinguishable and the wrong product is retrieved."""
+    label = md.get("product")
+    if not label or label in ("all", "unknown"):
+        label = str(md.get("doc_id", "")).replace("_", " ").strip()
+    section = md.get("section") or ""
+    parts = [p for p in (label, section) if p]
+    return " — ".join(parts)
+
+
 def _emit(texts: list[str], page: dict, base: dict, extra: dict | None = None) -> list[dict]:
     out = []
     for t in texts:
@@ -40,7 +55,9 @@ def _emit(texts: list[str], page: dict, base: dict, extra: dict | None = None) -
         md = {**base, "page": page["page"]}
         if extra:
             md.update(extra)
-        out.append({"text": t, "metadata": md})
+        prefix = _context_prefix(md)
+        text = f"{prefix}\n{t}" if prefix else t
+        out.append({"text": text, "metadata": md})
     return out
 
 

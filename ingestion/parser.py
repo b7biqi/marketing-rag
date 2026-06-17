@@ -3,21 +3,25 @@
 Returns a list of {"page": int, "text": str}. Page is 1 for non-paginated
 formats.
 
-PDFs: text is reconstructed as lightweight markdown — headings are detected from
-font size/weight and prefixed with `#` — so the `structure` chunker (which keys
-on `#` headings) works on real PDFs the same as on markdown docs. Heading
-detection is a tunable heuristic (PROJECT_PLAN §3.1/§3.3). Pages with no text
-layer are skipped (scanned → OCR is an M-later task).
+PDFs: text is reconstructed as lightweight markdown — headings detected from font
+size/weight and prefixed with `#` — so the `structure` chunker works on PDFs the
+same as on markdown. Repeated page headers/footers (doc title, "PSREF", "N of N",
+etc.) are detected across pages and dropped as boilerplate, since on real spec
+sheets they otherwise dominate retrieval (diagnosed on the PSREF corpus). Heading
+detection + boilerplate filtering are tunable heuristics (PROJECT_PLAN §3.1).
 """
 from __future__ import annotations
 
+import re
 from collections import Counter
 from pathlib import Path
 
 import fitz  # PyMuPDF
 import docx
 
-_BOLD_FLAG = 1 << 4  # PyMuPDF span flag bit for bold
+_BOLD_FLAG = 1 << 4
+_NOF_RE = re.compile(r"^\d+\s+of\s+\d+$", re.IGNORECASE)
+_BOILER_SUBSTRINGS = ("psref", "product specifications reference")
 
 
 def parse_file(path: str | Path) -> list[dict]:
@@ -32,56 +36,77 @@ def parse_file(path: str | Path) -> list[dict]:
     raise ValueError(f"Unsupported file type: {ext} ({path})")
 
 
-# --- PDF with heading detection -------------------------------------------
-
-def _parse_pdf(path: Path) -> list[dict]:
-    pages: list[dict] = []
-    skipped = 0
-    with fitz.open(path) as doc:
-        for i, page in enumerate(doc, start=1):
-            markdown = _page_to_markdown(page)
-            if markdown.strip():
-                pages.append({"page": i, "text": markdown})
-            else:
-                skipped += 1  # likely scanned → needs OCR (later milestone)
-    if skipped:
-        print(f"  [parser] {path.name}: {skipped} page(s) had no text layer "
-              f"(scanned? OCR pending)")
-    return pages
-
+# --- PDF: line extraction, boilerplate filtering, markdown reconstruction ----
 
 def _span_is_bold(span: dict) -> bool:
     return bool(span.get("flags", 0) & _BOLD_FLAG) or "bold" in span.get("font", "").lower()
 
 
-def _page_to_markdown(page) -> str:
-    """Reconstruct page text as markdown, prefixing detected headings with `#`."""
+def _page_lines(page) -> list[dict]:
+    """Extract text lines with size/bold/block, preserving order."""
+    out: list[dict] = []
     data = page.get_text("dict")
-    lines: list[dict] = []
-    sizes: list[int] = []
     for block_idx, block in enumerate(data.get("blocks", [])):
-        if block.get("type", 0) != 0:  # 0 = text block; skip images
+        if block.get("type", 0) != 0:  # skip images
             continue
         for line in block.get("lines", []):
             spans = line.get("spans", [])
             text = "".join(s.get("text", "") for s in spans).strip()
             if not text:
                 continue
-            max_size = max((s.get("size", 0) for s in spans), default=0)
-            bold = any(_span_is_bold(s) for s in spans)
-            lines.append({"text": text, "size": max_size, "bold": bold, "block": block_idx})
-            sizes.append(round(max_size))
+            out.append({
+                "text": text,
+                "size": max((s.get("size", 0) for s in spans), default=0),
+                "bold": any(_span_is_bold(s) for s in spans),
+                "block": block_idx,
+            })
+    return out
 
-    if not sizes:
-        return ""
 
-    body_size = Counter(sizes).most_common(1)[0][0]  # modal size = body text
+def _parse_pdf(path: Path) -> list[dict]:
+    with fitz.open(path) as doc:
+        per_page = [_page_lines(page) for page in doc]
+    n_pages = len(per_page)
 
+    # A line is boilerplate if it repeats across >= half the pages, or matches a
+    # known header/footer pattern (page numbers, PSREF markers).
+    freq: Counter[str] = Counter()
+    for lines in per_page:
+        for text in {ln["text"] for ln in lines}:
+            freq[text] += 1
+    repeat_threshold = max(2, (n_pages + 1) // 2)
+
+    def is_boiler(text: str) -> bool:
+        if n_pages >= 3 and freq[text] >= repeat_threshold:
+            return True
+        if _NOF_RE.match(text):
+            return True
+        low = text.lower()
+        return any(s in low for s in _BOILER_SUBSTRINGS)
+
+    sizes = [round(ln["size"]) for lines in per_page for ln in lines if not is_boiler(ln["text"])]
+    body_size = Counter(sizes).most_common(1)[0][0] if sizes else 11
+
+    pages: list[dict] = []
+    skipped = 0
+    for i, lines in enumerate(per_page, start=1):
+        kept = [ln for ln in lines if not is_boiler(ln["text"])]
+        markdown = _lines_to_markdown(kept, body_size)
+        if markdown.strip():
+            pages.append({"page": i, "text": markdown})
+        else:
+            skipped += 1
+    if skipped:
+        print(f"  [parser] {path.name}: {skipped} page(s) had no text (scanned? OCR pending)")
+    return pages
+
+
+def _lines_to_markdown(lines: list[dict], body_size: int) -> str:
     out: list[str] = []
     prev_block = None
     for ln in lines:
         if prev_block is not None and ln["block"] != prev_block:
-            out.append("")  # blank line between blocks → paragraph boundary
+            out.append("")  # paragraph boundary between blocks
         prev_block = ln["block"]
         level = _heading_level(ln, body_size)
         out.append(("#" * level + " " + ln["text"]) if level else ln["text"])
@@ -89,10 +114,8 @@ def _page_to_markdown(page) -> str:
 
 
 def _heading_level(line: dict, body_size: int) -> int:
-    """0 = body; 1-3 = heading level. Heuristic: short lines that are larger than
-    body text (or bold at body size) are headings; bigger → higher level."""
     words = len(line["text"].split())
-    if words > 14:  # too long to be a heading
+    if words > 14:
         return 0
     ratio = line["size"] / body_size if body_size else 1.0
     if ratio >= 1.5:

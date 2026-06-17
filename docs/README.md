@@ -46,3 +46,4 @@ was actually done, measured, and learned in each commit.
 - [0005 — PDF heading detection](0005-pdf-heading-detection.md)
 - [0006 — Embedding-model ablation (M1)](0006-embedding-ablation.md)
 - [0007 — Real corpus (public Lenovo PSREF PDFs)](0007-real-corpus.md)
+- [0008 — Real-corpus ingestion fixes (boilerplate + contextual chunking)](0008-real-corpus-ingestion-fixes.md)

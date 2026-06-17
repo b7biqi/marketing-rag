@@ -150,22 +150,26 @@ MANIFEST_PATH=corpus/manifest.json GOLDEN_PATH=corpus/golden_set.jsonl \
   python -m evaluation.run_eval --reindex --generation --top-k 5
 ```
 
-Real-corpus eval (3 PDFs, **85 chunks** — finally non-saturating):
+Real-corpus eval (3 PDFs, **85 chunks** — finally non-saturating). The first pass
+exposed real-world failures; a per-question diagnostic (`evaluation/diagnose.py`)
+located the cause, and the fix (boilerplate filtering + contextual chunking,
+docs/0008) recovered most of the gap:
 
-| metric | demo (synthetic) | real (PSREF PDFs) |
+| metric | naive PDF ingest | + boilerplate filter & contextual chunks |
 |---|---|---|
 | Recall@5 | 1.000 | 1.000 |
-| nDCG@5 | ~0.99 | 0.946 |
-| answer-kw coverage | 1.000 | **0.556** |
-| faithfulness | 1.000 | 0.778 |
-| abstention | 1.000 | 0.500 |
+| nDCG@5 | 0.946 | 0.977 |
+| answer-kw coverage | **0.556** | **0.944** |
+| faithfulness | 0.778 | 0.944 |
+| abstention (neg) | 0.500 | 0.500 |
 
-→ Real multi-column PSREF PDFs are much harder: the two-column key/value layout
-interleaves under naive extraction, so field→value pairs fragment and the specific
-answer often misses top-k. **Grounding still holds** — when the value isn't
-retrieved the system abstains instead of inventing it. This exposes the #1
-real-world gap: **column/table-aware PDF extraction** (PROJECT_PLAN §3.1) — the next
-priority, and exactly the kind of finding synthetic data hides.
+→ The failure was **not** column interleaving (a tempting guess). Diagnosis showed
+the right *document* was always retrieved, but repeated boilerplate (page titles,
+"PSREF") and the *wrong product's* same-field chunk outranked the real value. Fix:
+drop cross-page boilerplate in the parser, and prefix each chunk with
+`product — section` so "Max Memory: 128GB" is product-disambiguated. Coverage
+0.556 → 0.944. Grounding holds throughout (abstains rather than inventing). This is
+the kind of finding synthetic data hides — and why diagnosing beats guessing.
 
 ## Layout
 
@@ -184,9 +188,9 @@ docs/                # per-commit decision log
 
 ## Next (evidence-backed priorities)
 
-- **Column/table-aware PDF extraction** — the real corpus showed naive extraction
-  fragments two-column PSREF tables (coverage 0.556). Add pdfplumber/Docling or
-  column detection; should lift coverage and fix section attribution.
-- **Re-run ablations on the real corpus** now that metrics are non-saturating.
+- **Tighten abstention** — one real-corpus negative is answered instead of declined
+  (abstention 0.5); generation-side prompt/threshold work.
+- **Re-run ablations on the real corpus** now that metrics are non-saturating (the
+  earlier chunking/embedding "ties" may separate).
 - **M2:** fusion (RRF vs weighted) and reranker (`bge-reranker-v2-m3` vs ms-marco);
   add multilingual content to exercise `bge-m3`.

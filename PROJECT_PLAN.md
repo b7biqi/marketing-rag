@@ -122,6 +122,13 @@ rather than paying that cost everywhere.
 character-level extraction fidelity and table-cell accuracy: PyMuPDF vs
 PyMuPDF+pdfplumber-for-tables vs Docling. Pick by accuracy at acceptable latency.
 
+**Result (real corpus):** PyMuPDF + heading detection works; the real bottleneck on
+PSREF PDFs was **not** table/column extraction but (1) repeated page-header/footer
+boilerplate and (2) chunks lacking product context. Diagnosing per-question
+(`evaluation/diagnose.py`) then adding boilerplate filtering + contextual chunking
+lifted answer coverage 0.556 → 0.944. Table-aware extraction deferred until a
+corpus shows it's the bottleneck. See docs/0007–0008 and README §Real corpus.
+
 ### 3.2 OCR (scanned PDFs & images)
 
 | Option | Notes |
