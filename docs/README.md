@@ -50,3 +50,6 @@ was actually done, measured, and learned in each commit.
 - [0009 — Tighten abstention + re-run ablations on the real corpus](0009-abstention-and-real-ablations.md)
 - [0010 — OCR: when it's needed + implementation (RapidOCR)](0010-ocr-scoping.md)
 - [0011 — OCR end-to-end through retrieval + Chinese OCR](0011-ocr-end-to-end-and-chinese.md)
+- [0012 — Handoff doc + capabilities checklist](0012-handoff-and-checklist.md)
+
+For the project status, conventions, and backlog, see [../HANDOFF.md](../HANDOFF.md).

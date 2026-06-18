@@ -6,7 +6,8 @@ reranking, source citations, and (incrementally) an agentic workflow, OCR +
 vision ingestion, and an evaluation harness.
 
 See [PROJECT_PLAN.md](PROJECT_PLAN.md) for the full design and the justification
-(+ confirming experiment) behind every technical decision.
+(+ confirming experiment) behind every technical decision, and
+**[HANDOFF.md](HANDOFF.md)** to continue the work (state, conventions, backlog).
 
 ## Status
 
@@ -16,6 +17,27 @@ hybrid + rerank retrieve → grounded DeepSeek generation with citations.**
 Dev stack is deliberately lightweight (torch-free): `fastembed` (ONNX dense +
 sparse + reranker), Qdrant in embedded local mode, DeepSeek via LangChain
 `init_chat_model`. Self-hosted vLLM and the Claude fallback are deferred.
+
+## Capabilities checklist
+
+Done ✅ · partial 🟡 · todo ⬜ (full detail + backlog in [HANDOFF.md](HANDOFF.md))
+
+| | Capability | Notes |
+|---|---|---|
+| ✅ | Document ingestion | PDF (heading detection), DOCX, TXT/MD, images |
+| ✅ | OCR pipeline | RapidOCR — scanned PDFs, image files, **Chinese** |
+| ✅ | Vector DB + metadata filtering | Qdrant (dense + sparse, payload indexes) |
+| ✅ | Hybrid search | BM25 + vector, RRF fusion |
+| ✅ | Reranking | cross-encoder (precision@1 0.917→1.000) |
+| ✅ | Source grounding + abstention | claim → file + section; declines when unsupported |
+| 🟡 | Evaluation pipeline | custom harness (retrieval + LLM-judge); not the RAGAS lib |
+| 🟡 | Docker | dev container + services compose; no API image yet |
+| ⬜ | Agentic workflow (LangGraph) | plan → retrieve×N → draft → fact-check |
+| ⬜ | Multimodal / VLM | describe product **image** → retrieve → copy (≠ OCR) |
+| ⬜ | FastAPI service | `/ingest` `/query` `/generate-marketing-content` `/upload-image` `/health` |
+| ⬜ | Reliability layer | tenacity + pybreaker + Claude fallback |
+| ⬜ | M2 ablations | fusion (RRF vs weighted), reranker model, `bge-m3` multilingual |
+| ⬜ | GraphRAG / Neo4j | nice-to-have, deferred |
 
 ## Quickstart (VSCode Dev Container)
 
@@ -211,9 +233,14 @@ docs/                # per-commit decision log
 
 ## Next (evidence-backed priorities)
 
-- **Expand the real golden set** — 9 answerable Qs gives only directional signal;
-  more questions would make the strategy/embedding calls statistically confident.
-- **OCR the no-text pages** — each PSREF PDF has 1 page with no text layer (skipped);
-  the OCR/multimodal milestone.
-- **M2:** fusion (RRF vs weighted) and reranker (`bge-reranker-v2-m3` vs ms-marco);
-  add multilingual content to exercise `bge-m3`.
+Full prioritized backlog in [HANDOFF.md](HANDOFF.md). Top items:
+
+1. **Expand the real golden set** — 9 answerable Qs gives only directional signal;
+   more questions make the strategy/embedding calls statistically confident.
+2. **Multimodal / VLM** — describe a product *image* → retrieve → marketing copy
+   (image understanding, distinct from OCR). Biggest missing JD capability.
+3. **FastAPI service + reliability layer** (tenacity + pybreaker + Claude fallback),
+   then a single `docker compose up` that serves the API.
+4. **M2 ablations** — fusion (RRF vs weighted), reranker model, and `bge-m3` for the
+   multilingual requirement.
+5. **LangGraph agent** — plan → retrieve(product/brand/compliance) → draft → fact-check.
